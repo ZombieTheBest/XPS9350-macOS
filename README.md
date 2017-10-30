@@ -56,6 +56,10 @@ Note:
 - ```VoodooPS2Controller``` is recommended on macOS ```Sierra``` and ```Hish Sierra``` (10.```12+```)
 - ```AppleSmartTouchPad``` users(recommend on 10.```11-```): for two finger scrolling you need to change the speed of the Scrolling once to get it work and also have to enable them in Trackpad preferences. 
 
+Known Issues
+----------------
+- Minor Bluetooth / HandOff issues (need more feedback)
+- SD Card Reader not working on Hackintosh (no solution at the moment)
 
 TODO List
 ----------------
