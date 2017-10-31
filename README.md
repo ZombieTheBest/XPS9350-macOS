@@ -3,6 +3,10 @@ macOS on DELL XPS13 (9350)
 ====================================
 This project targets at giving the relatively complete functional macOS for XPS13 9350. Before you start, there's a brief introduction of how to finish powering up macOS on your laptop:
 
+Need BETA Testers
+----------------
+Please Read: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/issues/6
+
 Before installing macOS
 ----------------
 Since the original WiFi module is not compatible with macOS, you need to buy a DW1560 (recommended) or DW1830 module.
