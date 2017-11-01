@@ -1805,6 +1805,28 @@ function main()
     fi
 
     #
+    # Rename SSDT-x-* to SSDT-x to prevent compile error caused by newer version of Clover
+    # credits @squash- @zombiethebest
+    #
+    _PRINT_MSG "--->: ${BLUE}Renaming SSDTs...${OFF}"
+    if [ -e "${REPO}"/DSDT/prepare/SSDT-0.dsl ]; then
+      # Extracted Files are Good - nothing to do
+      _PRINT_MSG "OK: No need to rename."
+    else
+      # We have to rename the Files
+      for i in {0..6}
+      do
+        mv "${REPO}"/DSDT/prepare/SSDT-${i}* "${REPO}"/DSDT/prepare/SSDT-${i}.aml
+      done
+      for i in {7..13}
+      do
+        mv "${REPO}"/DSDT/prepare/SSDT-${i}x* "${REPO}"/DSDT/prepare/SSDT-${i}x.aml
+      done
+      mv "${REPO}"/DSDT/prepare/SSDT-14* "${REPO}"/DSDT/prepare/SSDT-14.aml
+      _PRINT_MSG "OK: SSDTs successfully renamed."
+    fi
+
+    #
     # Decompile acpi tables
     #
     cd "${REPO}"
