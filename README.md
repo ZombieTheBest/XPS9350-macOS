@@ -71,6 +71,9 @@ TODO List
 
 Change Log
 ----------------
+2017-11-01
+- Fixed SSDTs compile error caused by new Clover version (c) @squash- @ZombieTheBest
+
 2017-10-29 - ```High Sierra STABLE```
 - High Sierra STABLE Deploy
 - Fixed Backlight issue
