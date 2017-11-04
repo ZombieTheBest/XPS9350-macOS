@@ -1,0 +1,26 @@
+#Created by syscl
+#syscl_fixBrightnesskey_VoodooPS2
+#Patch fix the brightness keys F11 and F12 for XPS 13 9350/9360 and XPS 15 9550/9560
+#Credit azlvda, tdmsn
+
+into method label _DSM parent_label SAT0 replace_content
+begin
+If (PCIC (Arg0))\n
+{\n
+Return (PCID (Arg0, Arg1, Arg2, Arg3))\n
+}\n
+If (CondRefOf (\_SB.PCI0.SAT0.SDSM))\n
+{\n
+Return (SDSM)\n
+}\n
+Return (Zero)\n
+end;
+
+into method label ADBG replace_content
+begin
+If (CondRefOf (MDBG))\n
+{\n
+Return (MDBG)\n
+}\n
+Return (Zero)\n
+end;
