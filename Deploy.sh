@@ -605,9 +605,9 @@ function _getEDID()
     if [[ "${gIntelGraphicsCardInfo}" == *"Iris"* ]];
       then
         #
-        # Iris version, no IOKit/CoreDisplay patch require
+        # Iris version, still need CoreDisplayFixup patch require
         #
-        gPatchIOKit=${kBASHReturnFailure}
+        gPatchIOKit=${kBASHReturnSuccess}
       else
         if [[ $gHorizontalRez -gt 1920 || $gSystemHorizontalRez -gt 1920 ]];
           then
