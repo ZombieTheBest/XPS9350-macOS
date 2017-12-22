@@ -165,6 +165,7 @@
 			<string>SSDT-rmne.aml</string>
 			<string>SSDT-XPS13SKL.aml</string>
 			<string>SSDT-XHC.aml</string>
+			<string>SSDT-ALS0.aml</string>
 		</array>
 	</dict>
 	<key>Boot</key>
