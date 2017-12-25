@@ -7,6 +7,8 @@ Need BETA Testers
 ----------------
 Please Read: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/issues/6
 
+I advice you to use the BETA Branch: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/tree/beta
+
 Before installing macOS
 ----------------
 Since the original WiFi module is not compatible with macOS, you need to buy a DW1560 (recommended) or DW1830 module.
