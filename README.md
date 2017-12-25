@@ -70,6 +70,9 @@ Change Log
 2017-12-25
 - Fixed DSDT compile errors
 - Improved Deploy.sh patching
+- Updated Clover with Rehabman's Branch
+- Updated Kexts and apfs.efi to fully support 10.13.2
+- Removed Sorted Order and added AutoMerge (delete and dump your ACPI files again!)
 - Merged BETA Branch with Master
 - Implemented all improvements by @maz-1. Thank you!
 
