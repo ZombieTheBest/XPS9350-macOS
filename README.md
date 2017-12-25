@@ -3,6 +3,12 @@ macOS on DELL XPS13 (9350)
 ====================================
 This project targets at giving the relatively complete functional macOS for XPS13 9350. Before you start, there's a brief introduction of how to finish powering up macOS on your laptop:
 
+Need BETA Testers
+----------------
+Please Read: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/issues/6
+
+I advice you to use the BETA Branch: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/tree/beta
+
 Before installing macOS
 ----------------
 Since the original WiFi module is not compatible with macOS, you need to buy a DW1560 (recommended) or DW1830 module.
@@ -53,9 +59,13 @@ Reboot your macOS to see the change. If you have any problem about the script, t
 ```
 
 Note:
-- ```VoodooPS2Controller``` is recommended on macOS ```Sierra``` and ```Hish Sierra``` (10.```12+```)
+- ```VoodooPS2Controller``` is recommended on macOS ```Sierra``` and ```High Sierra``` (10.```12+```)
 - ```AppleSmartTouchPad``` users(recommend on 10.```11-```): for two finger scrolling you need to change the speed of the Scrolling once to get it work and also have to enable them in Trackpad preferences. 
 
+Known Issues
+----------------
+- Minor Bluetooth / HandOff issues (need more feedback)
+- SD Card Reader not working on Hackintosh (no solution at the moment)
 
 TODO List
 ----------------
@@ -63,6 +73,9 @@ TODO List
 
 Change Log
 ----------------
+2017-11-01
+- Fixed SSDTs compile error caused by new Clover version (c) @squash- @ZombieTheBest
+
 2017-10-29 - ```High Sierra STABLE```
 - High Sierra STABLE Deploy
 - Fixed Backlight issue
