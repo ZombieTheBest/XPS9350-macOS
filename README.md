@@ -59,11 +59,12 @@ Note:
 Known Issues
 ----------------
 - Minor Bluetooth / HandOff issues (need more feedback)
-- SD Card Reader not working on Hackintosh (no solution at the moment)
+- Type-C Port Hotplug will work only if a device was plugged in at boot. Type-C charging works.
+- SD Card Reader not working on Hackintosh (a solution may appear in the next months)
 
 TODO List
 ----------------
-- Nothing to do
+- Waiting for a way to fix USB-C 
 
 Change Log
 ----------------
