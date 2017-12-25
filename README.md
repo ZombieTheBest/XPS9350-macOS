@@ -3,12 +3,6 @@ macOS on DELL XPS13 (9350)
 ====================================
 This project targets at giving the relatively complete functional macOS for XPS13 9350. Before you start, there's a brief introduction of how to finish powering up macOS on your laptop:
 
-Need BETA Testers
-----------------
-Please Read: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/issues/6
-
-I advice you to use the BETA Branch: https://github.com/ZombieTheBest/XPS9350-10.13-HighSierra/tree/beta
-
 Before installing macOS
 ----------------
 Since the original WiFi module is not compatible with macOS, you need to buy a DW1560 (recommended) or DW1830 module.
@@ -65,14 +59,24 @@ Note:
 Known Issues
 ----------------
 - Minor Bluetooth / HandOff issues (need more feedback)
-- SD Card Reader not working on Hackintosh (no solution at the moment)
+- Type-C Port Hotplug will work only if a device was plugged in at boot. Type-C charging works.
+- SD Card Reader not working on Hackintosh (a solution may appear in the next months)
 
 TODO List
 ----------------
-- Nothing to do
+- Waiting for a way to fix USB-C 
 
 Change Log
 ----------------
+2017-12-25
+- Fixed DSDT compile errors
+- Improved Deploy.sh patching
+- Updated Clover with Rehabman's Branch
+- Updated Kexts and apfs.efi to fully support 10.13.2
+- Removed Sorted Order and added AutoMerge (delete and dump your ACPI files again!)
+- Merged BETA Branch with Master
+- Implemented all improvements by @maz-1. Thank you!
+
 2017-11-01
 - Fixed SSDTs compile error caused by new Clover version (c) @squash- @ZombieTheBest
 
