@@ -293,6 +293,31 @@ function _touch()
 
 function patch_acpi()
 {
+    #create a backup of current error-free DSDT
+    cp "${REPO}"/DSDT/raw/$1.dsl "${REPO}"/DSDT/raw/$1_backup.dsl
+    #apply the patch
+    if [ "$2" == "syscl" ];
+      then
+        "${REPO}"/tools/patchmatic "${REPO}"/DSDT/raw/$1.dsl "${REPO}"/DSDT/patches/$3.txt "${REPO}"/DSDT/raw/$1.dsl
+      else
+        "${REPO}"/tools/patchmatic "${REPO}"/DSDT/raw/$1.dsl "${REPO}"/DSDT/patches/$2/$3.txt "${REPO}"/DSDT/raw/$1.dsl
+    fi
+    #check if patched DSDT has errors
+    "${REPO}"/tools/iasl -vr -p "${REPO}"/DSDT/raw/$1temp.aml "${REPO}"/DSDT/raw/$1.dsl
+    if [ -e "${REPO}"/DSDT/raw/$1temp.aml ]
+      then
+        rm "${REPO}"/DSDT/raw/$1temp.aml
+        rm "${REPO}"/DSDT/raw/$1_backup.dsl
+      else
+        _PRINT_MSG "NOTE: $3 was not applied as it was causing errors."
+        rm "${REPO}"/DSDT/raw/$1.dsl
+        mv "${REPO}"/DSDT/raw/$1_backup.dsl "${REPO}"/DSDT/raw/$1.dsl
+    fi
+}
+
+function patch_acpi_force()
+{
+    #apply the patch
     if [ "$2" == "syscl" ];
       then
         "${REPO}"/tools/patchmatic "${REPO}"/DSDT/raw/$1.dsl "${REPO}"/DSDT/patches/$3.txt "${REPO}"/DSDT/raw/$1.dsl
@@ -580,9 +605,9 @@ function _getEDID()
     if [[ "${gIntelGraphicsCardInfo}" == *"Iris"* ]];
       then
         #
-        # Iris version, no IOKit/CoreDisplay patch require
+        # Iris version, still need CoreDisplayFixup patch require
         #
-        gPatchIOKit=${kBASHReturnFailure}
+        gPatchIOKit=${kBASHReturnSuccess}
       else
         if [[ $gHorizontalRez -gt 1920 || $gSystemHorizontalRez -gt 1920 ]];
           then
@@ -1245,7 +1270,7 @@ function _createUSB_Sleep_Script()
     echo '  gProtocol=$(diskutil info ${gDisk[i]} |grep -i "Protocol" |sed -e "s|Protocol:||" -e "s| ||g")'                                                 >> "$gUSBSleepScript"
     echo '  if [[ ${gProtocol} == *"USB"* ]];'                                                                                                              >> "$gUSBSleepScript"
     echo '    then'                                                                                                                                         >> "$gUSBSleepScript"
-    echo '      gCurrent_Partitions=($(ls /dev/${gDisk[0]}s? |grep -o "disk[0-9]s[0-9]"))'                                                                  >> "$gUSBSleepScript"
+    echo '      gCurrent_Partitions=($(ls /dev/${gDisk[i]}s? |grep -o "disk[0-9]s[0-9]"))'                                                                  >> "$gUSBSleepScript"
     echo '      for ((k=0; k<${#gCurrent_Partitions[@]}; ++k))'                                                                                             >> "$gUSBSleepScript"
     echo '      do'                                                                                                                                         >> "$gUSBSleepScript"
     echo '        gConfirm_Mounted=$(diskutil info ${gCurrent_Partitions[k]} |grep -i 'Mounted' |sed -e "s| Mounted:||" -e "s| ||g")'                       >> "$gUSBSleepScript"
@@ -1809,20 +1834,21 @@ function main()
     # credits @squash- @zombiethebest
     #
     _PRINT_MSG "--->: ${BLUE}Renaming SSDTs...${OFF}"
-    if [ -e "${REPO}"/DSDT/prepare/SSDT-0.dsl ]; then
+    if [ -e "${REPO}"/DSDT/raw/SSDT-0.dsl ]; then
       # Extracted Files are Good - nothing to do
       _PRINT_MSG "OK: No need to rename."
     else
       # We have to rename the Files
+      mv "${REPO}"/DSDT/raw/SSDT-1-sensrhub.aml "${REPO}"/DSDT/raw/SSDT-1.aml
       for i in {0..6}
       do
-        mv "${REPO}"/DSDT/prepare/SSDT-${i}* "${REPO}"/DSDT/prepare/SSDT-${i}.aml
+        mv "${REPO}"/DSDT/raw/SSDT-${i}* "${REPO}"/DSDT/raw/SSDT-${i}.aml
       done
       for i in {7..13}
       do
-        mv "${REPO}"/DSDT/prepare/SSDT-${i}x* "${REPO}"/DSDT/prepare/SSDT-${i}x.aml
+        mv "${REPO}"/DSDT/raw/SSDT-${i}x* "${REPO}"/DSDT/raw/SSDT-${i}x.aml
       done
-      mv "${REPO}"/DSDT/prepare/SSDT-14* "${REPO}"/DSDT/prepare/SSDT-14.aml
+      mv "${REPO}"/DSDT/raw/SSDT-14* "${REPO}"/DSDT/raw/SSDT-14.aml
       _PRINT_MSG "OK: SSDTs successfully renamed."
     fi
 
@@ -1846,6 +1872,7 @@ function main()
     #
     sed -ig 's/DefinitionBlock ("", "DSDT", 2, "DELL  ", "CBX3   ", 0x01072009)/DefinitionBlock ("", "DSDT", 3, "APPLE ", "MacBook", 0x00080001)/' "${REPO}"/DSDT/raw/DSDT.dsl
     _PRINT_MSG "--->: ${BLUE}Patching DSDT.dsl${OFF}"
+    _tidy_exec "patch_acpi_force DSDT syscl "fix_dsdt_initial"" "Fix DSDT initial errors credit ZombieTheBest"
     _tidy_exec "patch_acpi DSDT syntax "rename_DSM"" "_DSM->XDSM"
     _tidy_exec "patch_acpi DSDT syscl "syscl_fixFieldLen"" "Fix word field length Dword->Qword credit syscl"
     _tidy_exec "patch_acpi DSDT syscl "system_OSYS"" "OS Check Fix"
@@ -1890,7 +1917,7 @@ function main()
     _tidy_exec "patch_acpi DSDT syscl "rmWMI"" "Remove WMI(PNP0C14)"
     # RP09.PXSX -> RP09.SSD0
     _tidy_exec "patch_acpi DSDT syscl "syscl_SSD"" "Inject SSD device property credit syscl"
-    sed -ig 's/\.RP09\.PXSX/\.RP09\.SSD0/' "${REPO}"/DSDT/raw/DSDT.dsl
+    #sed -ig 's/\.RP09\.PXSX/\.RP09\.SSD0/' "${REPO}"/DSDT/raw/DSDT.dsl
     local gNVMeKextIsLoad=$(kextstat |grep -i "NVME")
     if [[ ${gNVMeKextIsLoad} != "" ]]; then
         #
@@ -1900,7 +1927,7 @@ function main()
         _tidy_exec "patch_acpi DSDT syscl "syscl_NVMe"" "Inject NVMe power management properties credit Pike R. Alpha, syscl"
     fi
     # PBTN -> PWRB
-    sed -ig 's/PBTN/PWRB/' "${REPO}"/DSDT/raw/DSDT.dsl
+    #sed -ig 's/PBTN/PWRB/' "${REPO}"/DSDT/raw/DSDT.dsl
     _tidy_exec "patch_acpi DSDT syscl "syscl_PWRB"" "Remove _PWR, _PSW in PWRB(PNP0C0C)"
     # Inject reg-ltrovr for IOPCIFamily::setLatencyTolerance setting ltrOffset for PCI devices successfully (c) syscl
     _tidy_exec "patch_acpi DSDT syscl "syscl_ltrovr"" "Inject reg-ltrovr for IOPCIFamily::setLatencyTolerance setting ltrOffset for PCI devices successfully (c) syscl"
@@ -1916,21 +1943,21 @@ function main()
     # DptfTa Patches.
     #
     _PRINT_MSG "--->: ${BLUE}Patching ${DptfTa}.dsl${OFF}"
-    _tidy_exec "patch_acpi ${DptfTa} graphics "graphics_Rename-GFX0"" "Rename GFX0 to IGPU"
+    _tidy_exec "patch_acpi_force ${DptfTa} graphics "graphics_Rename-GFX0"" "Rename GFX0 to IGPU"
 
     #
     # SaSsdt Patches.
     #
     _PRINT_MSG "--->: ${BLUE}Patching ${SaSsdt}.dsl${OFF}"
-    _tidy_exec "patch_acpi ${SaSsdt} syntax "rename_DSM"" "_DSM->XDSM"
-    _tidy_exec "patch_acpi ${SaSsdt} graphics "graphics_Rename-GFX0"" "Rename GFX0 to IGPU"
+    _tidy_exec "patch_acpi_force ${SaSsdt} syntax "rename_DSM"" "_DSM->XDSM"
+    _tidy_exec "patch_acpi_force ${SaSsdt} graphics "graphics_Rename-GFX0"" "Rename GFX0 to IGPU"
 
     #
     # sensrhub patches
     #
-    _PRINT_MSG "${BLUE}Fixing ${sensrhub}.dsl${OFF}"
-    _tidy_exec "patch_acpi ${sensrhub} syntax "rename_DSM"" "_DSM->XDSM"
-    _tidy_exec "patch_acpi ${sensrhub} syscl "syscl_fix_PARSEOP_IF"" "Fix PARSEOP_IF error credit syscl"
+    _PRINT_MSG "--->: ${BLUE}Fixing ${sensrhub}.dsl${OFF}"
+    _tidy_exec "patch_acpi_force ${sensrhub} syntax "rename_DSM"" "_DSM->XDSM"
+    _tidy_exec "patch_acpi_force ${sensrhub} syscl "syscl_fix_PARSEOP_IF"" "Fix PARSEOP_IF error credit syscl"
 
     #
     # fix reboot issue credit syscl
@@ -2020,9 +2047,11 @@ function main()
     #
     # Rename a High Sierra Kext to prevent BT Issue
     #
-    if ["${isSierra}" -eq 0];
+    if [ "${isSierra}" -eq 0 ];
       then
-        _tidy_exec "sudo mv "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.kext" "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.bak"" "Rename AirPortBrcmNIC-MFG.kext..."
+        if [ -f "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.kext" ]; then
+          _tidy_exec "sudo mv "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.kext" "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.bak"" "Rename AirPortBrcmNIC-MFG.kext..."
+        fi
     fi
     #
     # Clean up dynamic tables USB related tables
@@ -2074,6 +2103,17 @@ function main()
         _tidy_exec "install_audio" "Install audio"
     fi
 
+    # Set EFILoginHiDPI & UIScale
+    if [[ $gHorizontalRez -gt 1920 || $gSystemHorizontalRez -gt 1920 ]];
+    _PRINT_MSG "--->: ${BLUE}Setting EFILoginHiDPI & UIScale...${OFF}"
+    then
+      ${doCommands[1]} "Set :BootGraphics:EFILoginHiDPI 1" "${config_plist}"
+      ${doCommands[1]} "Set :BootGraphics:UIScale 2" "${config_plist}"
+    else
+      ${doCommands[1]} "Set :BootGraphics:EFILoginHiDPI 0" "${config_plist}"
+      ${doCommands[1]} "Set :BootGraphics:UIScale 1" "${config_plist}"
+    fi
+
     #
     # Patch IOKit/CoreDisplay.
     #
@@ -2085,7 +2125,7 @@ function main()
         _PRINT_MSG "--->: ${BLUE}Unlocking maximum pixel clock...${OFF}"
         if [ $gMINOR_VER -ge $gDelimitation_OSVer ];
           then
-            if [ "${isSierra}" -eq 0];
+            if [ "${isSierra}" -eq 0 ];
               then
                 #
                 # 10.13 - Using Lilu.kext + CoreDisplayFixUp.kext to prevent clipboard crash + BT PATCH
