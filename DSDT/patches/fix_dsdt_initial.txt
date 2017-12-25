@@ -24,3 +24,163 @@ Return (MDBG)\n
 }\n
 Return (Zero)\n
 end;
+
+into method label _CRS parent_label PCI0 replace_content
+begin
+Store (GPCL (), Local0)\n
+CreateWordField (BUF0, \_SB.PCI0._Y00._MAX, PBMX)  // _MAX: Maximum Base Address\n
+Store (Subtract (ShiftRight (Local0, 0x14), 0x02), PBMX)\n
+CreateWordField (BUF0, \_SB.PCI0._Y00._LEN, PBLN)  // _LEN: Length\n
+Store (Subtract (ShiftRight (Local0, 0x14), One), PBLN)\n
+If (PM1L)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y01._LEN, C0LN)  // _LEN: Length\n
+Store (Zero, C0LN)\n
+}\n
+If (LEqual (PM1L, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y01._RW, C0RW)  // _RW_: Read-Write Status\n
+Store (Zero, C0RW)\n
+}\n
+If (PM1H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y02._LEN, C4LN)  // _LEN: Length\n
+Store (Zero, C4LN)\n
+}\n
+If (LEqual (PM1H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y02._RW, C4RW)  // _RW_: Read-Write Status\n
+Store (Zero, C4RW)\n
+}\n
+If (PM2L)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y03._LEN, C8LN)  // _LEN: Length\n
+Store (Zero, C8LN)\n
+}\n
+If (LEqual (PM2L, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y03._RW, C8RW)  // _RW_: Read-Write Status\n
+Store (Zero, C8RW)\n
+}\n
+If (PM2H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y04._LEN, CCLN)  // _LEN: Length\n
+Store (Zero, CCLN)\n
+}\n
+If (LEqual (PM2H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y04._RW, CCRW)  // _RW_: Read-Write Status\n
+Store (Zero, CCRW)\n
+}\n
+If (PM3L)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y05._LEN, D0LN)  // _LEN: Length\n
+Store (Zero, D0LN)\n
+}\n
+If (LEqual (PM3L, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y05._RW, D0RW)  // _RW_: Read-Write Status\n
+Store (Zero, D0RW)\n
+}\n
+If (PM3H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y06._LEN, D4LN)  // _LEN: Length\n
+Store (Zero, D4LN)\n
+}\n
+If (LEqual (PM3H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y06._RW, D4RW)  // _RW_: Read-Write Status\n
+Store (Zero, D4RW)\n
+}\n
+If (PM4L)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y07._LEN, D8LN)  // _LEN: Length\n
+Store (Zero, D8LN)\n
+}\n
+If (LEqual (PM4L, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y07._RW, D8RW)  // _RW_: Read-Write Status\n
+Store (Zero, D8RW)\n
+}\n
+If (PM4H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y08._LEN, DCLN)  // _LEN: Length\n
+Store (Zero, DCLN)\n
+}\n
+If (LEqual (PM4H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y08._RW, DCRW)  // _RW_: Read-Write Status\n
+Store (Zero, DCRW)\n
+}\n
+If (PM5L)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y09._LEN, E0LN)  // _LEN: Length\n
+Store (Zero, E0LN)\n
+}\n
+If (LEqual (PM5L, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y09._RW, E0RW)  // _RW_: Read-Write Status\n
+Store (Zero, E0RW)\n
+}\n
+If (PM5H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0A._LEN, E4LN)  // _LEN: Length\n
+Store (Zero, E4LN)\n
+}\n
+If (LEqual (PM5H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y0A._RW, E4RW)  // _RW_: Read-Write Status\n
+Store (Zero, E4RW)\n
+}\n
+If (PM6L)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0B._LEN, E8LN)  // _LEN: Length\n
+Store (Zero, E8LN)\n
+}\n
+If (LEqual (PM6L, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y0B._RW, E8RW)  // _RW_: Read-Write Status\n
+Store (Zero, E8RW)\n
+}\n
+If (PM6H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0C._LEN, ECLN)  // _LEN: Length\n
+Store (Zero, ECLN)\n
+}\n
+If (LEqual (PM6H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y0C._RW, ECRW)  // _RW_: Read-Write Status\n
+Store (Zero, ECRW)\n
+}\n
+If (PM0H)\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0D._LEN, F0LN)  // _LEN: Length\n
+Store (Zero, F0LN)\n
+}\n
+If (LEqual (PM0H, One))\n
+{\n
+CreateBitField (BUF0, \_SB.PCI0._Y0D._RW, F0RW)  // _RW_: Read-Write Status\n
+Store (Zero, F0RW)\n
+}\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0E._MIN, M1MN)  // _MIN: Minimum Base Address\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0E._MAX, M1MX)  // _MAX: Maximum Base Address\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0E._LEN, M1LN)  // _LEN: Length\n
+Store (M32L, M1LN)\n
+Store (M32B, M1MN)\n
+Subtract (Add (M1MN, M1LN), One, M1MX)\n
+If (LEqual (M64L, Zero))\n
+{\n
+CreateDWordField (BUF0, \_SB.PCI0._Y0F._LEN, MSLN)  // _LEN: Length\n
+Store (Zero, MSLN)\n
+}\n
+Else\n
+{\n
+CreateQWordField (BUF0, \_SB.PCI0._Y0F._LEN, M2LN)  // _LEN: Length\n
+CreateQWordField (BUF0, \_SB.PCI0._Y0F._MIN, M2MN)  // _MIN: Minimum Base Address\n
+CreateQWordField (BUF0, \_SB.PCI0._Y0F._MAX, M2MX)  // _MAX: Maximum Base Address\n
+Store (M64L, M2LN)\n
+Store (M64B, M2MN)\n
+Subtract (Add (M2MN, M2LN), One, M2MX)\n
+}\n
+Return (BUF0)\n
+end;
