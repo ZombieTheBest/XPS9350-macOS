@@ -320,9 +320,9 @@ function patch_acpi_force()
     #apply the patch
     if [ "$2" == "syscl" ];
       then
-        "${REPO}"/tools/patchmatic "${REPO}"/tools/$1.dsl "${REPO}"/DSDT/patches/$3.txt "${REPO}"/tools/$1.dsl
+        "${REPO}"/tools/patchmatic "${REPO}"/DSDT/raw/$1.dsl "${REPO}"/DSDT/patches/$3.txt "${REPO}"/DSDT/raw/$1.dsl
       else
-        "${REPO}"/tools/patchmatic "${REPO}"/tools/$1.dsl "${REPO}"/DSDT/patches/$2/$3.txt "${REPO}"/tools/$1.dsl
+        "${REPO}"/tools/patchmatic "${REPO}"/DSDT/raw/$1.dsl "${REPO}"/DSDT/patches/$2/$3.txt "${REPO}"/DSDT/raw/$1.dsl
     fi
 }
 
@@ -1834,20 +1834,21 @@ function main()
     # credits @squash- @zombiethebest
     #
     _PRINT_MSG "--->: ${BLUE}Renaming SSDTs...${OFF}"
-    if [ -e "${REPO}"/DSDT/prepare/SSDT-0.dsl ]; then
+    if [ -e "${REPO}"/DSDT/raw/SSDT-0.dsl ]; then
       # Extracted Files are Good - nothing to do
       _PRINT_MSG "OK: No need to rename."
     else
       # We have to rename the Files
+      mv "${REPO}"/DSDT/raw/SSDT-1-sensrhub.aml "${REPO}"/DSDT/raw/SSDT-1.aml
       for i in {0..6}
       do
-        mv "${REPO}"/DSDT/prepare/SSDT-${i}* "${REPO}"/DSDT/prepare/SSDT-${i}.aml
+        mv "${REPO}"/DSDT/raw/SSDT-${i}* "${REPO}"/DSDT/raw/SSDT-${i}.aml
       done
       for i in {7..13}
       do
-        mv "${REPO}"/DSDT/prepare/SSDT-${i}x* "${REPO}"/DSDT/prepare/SSDT-${i}x.aml
+        mv "${REPO}"/DSDT/raw/SSDT-${i}x* "${REPO}"/DSDT/raw/SSDT-${i}x.aml
       done
-      mv "${REPO}"/DSDT/prepare/SSDT-14* "${REPO}"/DSDT/prepare/SSDT-14.aml
+      mv "${REPO}"/DSDT/raw/SSDT-14* "${REPO}"/DSDT/raw/SSDT-14.aml
       _PRINT_MSG "OK: SSDTs successfully renamed."
     fi
 
@@ -1954,7 +1955,7 @@ function main()
     #
     # sensrhub patches
     #
-    _PRINT_MSG "${BLUE}Fixing ${sensrhub}.dsl${OFF}"
+    _PRINT_MSG "--->: ${BLUE}Fixing ${sensrhub}.dsl${OFF}"
     _tidy_exec "patch_acpi_force ${sensrhub} syntax "rename_DSM"" "_DSM->XDSM"
     _tidy_exec "patch_acpi_force ${sensrhub} syscl "syscl_fix_PARSEOP_IF"" "Fix PARSEOP_IF error credit syscl"
 
@@ -2048,7 +2049,9 @@ function main()
     #
     if [ "${isSierra}" -eq 0 ];
       then
-        _tidy_exec "sudo mv "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.kext" "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.bak"" "Rename AirPortBrcmNIC-MFG.kext..."
+        if [ -f "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.kext" ]; then
+          _tidy_exec "sudo mv "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.kext" "${gExtensions_Repo[0]}/AirPortBrcmNIC-MFG.bak"" "Rename AirPortBrcmNIC-MFG.kext..."
+        fi
     fi
     #
     # Clean up dynamic tables USB related tables
@@ -2099,7 +2102,7 @@ function main()
         _PRINT_MSG "--->: ${BLUE}Installing audio...${OFF}"
         _tidy_exec "install_audio" "Install audio"
     fi
-    
+
     # Set EFILoginHiDPI & UIScale
     if [[ $gHorizontalRez -gt 1920 || $gSystemHorizontalRez -gt 1920 ]];
     _PRINT_MSG "--->: ${BLUE}Setting EFILoginHiDPI & UIScale...${OFF}"
@@ -2110,7 +2113,7 @@ function main()
       ${doCommands[1]} "Set :BootGraphics:EFILoginHiDPI 0" "${config_plist}"
       ${doCommands[1]} "Set :BootGraphics:UIScale 1" "${config_plist}"
     fi
-    
+
     #
     # Patch IOKit/CoreDisplay.
     #
