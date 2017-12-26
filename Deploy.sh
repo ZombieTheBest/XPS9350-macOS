@@ -67,6 +67,8 @@ to_Plist="/Library/LaunchDaemons/com.syscl.externalfix.sleepwatcher.plist"
 to_shell_sleep="/etc/sysclusbfix.sleep"
 to_shell_wake="/etc/sysclusbfix.wake"
 gRT_Config="/Applications/Wireless Network Utility.app"/${gMAC_adr}rfoff.rtl
+gVoodooPS2Config="/tmp/org.rehabman.voodoo.driver.Daemon.plist"
+VoodooPS2_to_Plist="/Library/LaunchAgents/org.rehabman.voodoo.driver.Daemon.plist"
 drivers64UEFI="${REPO}/CLOVER/drivers64UEFI"
 t_drivers64UEFI=""
 clover_tools="${REPO}/CLOVER/tools"
@@ -1238,6 +1240,39 @@ function _printUSBSleepConfig()
     echo '</plist>'                                                                                                                                        >> "$gUSBSleepConfig"
 }
 
+
+function _printVoodooPS2Config()
+{
+    _del ${gVoodooPS2Config}
+
+    echo '<?xml version="1.0" encoding="UTF-8"?>'                                                                                                           > "$gVoodooPS2Config"
+    echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'                                          >> "$gVoodooPS2Config"
+    echo '<plist version="1.0">'                                                                                                                           >> "$gVoodooPS2Config"
+    echo '<dict>'                                                                                                                                          >> "$gVoodooPS2Config"
+    echo '	<key>Label</key>'                                                                                                                              >> "$gVoodooPS2Config"
+    echo '	<string>org.rehabman.voodoo.driver.Daemon</string>'                                                                                            >> "$gVoodooPS2Config"
+    echo '	<key>RunAtLoad</key>'                                                                                                                          >> "$gVoodooPS2Config"
+    echo '	<true/>'                                                                                                                                       >> "$gVoodooPS2Config"
+    echo '	<key>KeepAlive</key>'                                                                                                                          >> "$gVoodooPS2Config"
+    echo '	<false/>'                                                                                                                                      >> "$gVoodooPS2Config"
+    echo '	<key>Program</key>'                                                                                                                            >> "$gVoodooPS2Config"
+    echo "	<string>${gInstall_Repo%/}/VoodooPS2Daemon</string>"                                                                                              >> "$gVoodooPS2Config"
+    echo '	<key>ProgramArguments</key>'                                                                                                                   >> "$gVoodooPS2Config"
+    echo '	<array>'                                                                                                                                       >> "$gVoodooPS2Config"
+    echo "		<string>${gInstall_Repo%/}/VoodooPS2Daemon</string>"                                                                                          >> "$gVoodooPS2Config"
+    echo '		<string>--startupDelay</string>'                                                                                                           >> "$gVoodooPS2Config"
+    echo '		<string>1000000</string>'                                                                                                                  >> "$gVoodooPS2Config"
+    echo '		<string>--notificationDelay</string>'                                                                                                      >> "$gVoodooPS2Config"
+    echo '		<string>20000</string>'                                                                                                                    >> "$gVoodooPS2Config"
+    echo '	</array>'                                                                                                                                      >> "$gVoodooPS2Config"
+    echo '	<key>StandardOutPath</key>'                                                                                                                    >> "$gVoodooPS2Config"
+    echo '	<string>/var/log/VoodooPS2Daemon.log</string>'                                                                                                 >> "$gVoodooPS2Config"
+    echo '	<key>StandardErrorPath</key>'                                                                                                                  >> "$gVoodooPS2Config"
+    echo '	<string>/var/log/VoodooPS2Daemon.log</string>'                                                                                                 >> "$gVoodooPS2Config"
+    echo '</dict>'                                                                                                                                         >> "$gVoodooPS2Config"
+    echo '</plist>'                                                                                                                                        >> "$gVoodooPS2Config"
+}
+
 #
 #--------------------------------------------------------------------------------
 #
@@ -1431,6 +1466,14 @@ function _del()
 #
 #--------------------------------------------------------------------------------
 #
+
+function _install_voodoops2daemon()
+{
+    _tidy_exec "sudo cp "${gFrom}/VoodooPS2Daemon" "${gInstall_Repo}"" "Install VoodooPS2Daemon"
+    _tidy_exec "sudo chmod 0755 ${gInstall_Repo}/VoodooPS2Daemon" "Set Permissions for VoodooPS2Daemon"
+    _tidy_exec "_printVoodooPS2Config" "Generate configuration file of VoodooPS2Daemon"
+    _tidy_exec "sudo cp "${gVoodooPS2Config}" "${VoodooPS2_to_Plist}"" "Install configuration of VoodooPS2Daemon"
+}
 
 function _fix_usb_ejected_improperly()
 {
@@ -2165,6 +2208,16 @@ function main()
     #
     _fix_usb_ejected_improperly
 
+    #
+    # Install VoodooPS2Daemon
+    #
+    if [[ ${gSelect_TouchPad_Drv} != 1 ]];
+    then
+        _install_voodoops2daemon
+    else
+        _tidy_exec "sudo rm -f ${gInstall_Repo}/VoodooPS2Daemon ${VoodooPS2_to_Plist}" "Remove VoodooPS2Daemon"
+    fi
+    
     #
     # Fix hibernatemode
     #
